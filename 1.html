@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Registration Form</title>
+	<style>
+		/* Set the font family and add padding to the body */
+		body {
+			font-family: Arial, sans-serif;
+			padding: 20px;
+		}
+
+		/* Add margin-bottom to h2 heading */
+		h2 {
+			margin-bottom: 20px;
+		}
+
+		/* Add margin-bottom to form groups */
+		.form-group {
+			margin-bottom: 20px;
+		}
+
+		/* Display labels as block elements and add some spacing */
+		label {
+			display: block;
+			font-weight: bold;
+			margin-bottom: 5px;
+		}
+
+		/* Style text inputs, password inputs, and select elements */
+		input[type="text"],
+		input[type="password"],
+		select {
+			width: 200px;
+			padding: 5px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			font-size: 14px;
+		}
+
+		/* Add margin-right to radio buttons and checkboxes */
+		input[type="radio"],
+		input[type="checkbox"] {
+			margin-right: 5px;
+		}
+
+		/* Add margin-top to the button group */
+		.btn-group {
+			margin-top: 20px;
+		}
+
+		/* Style the buttons */
+		.btn {
+			padding: 10px 20px;
+			background-color: #4CAF50;
+			border: none;
+			color: #fff;
+			font-size: 16px;
+			cursor: pointer;
+			width: 150px;
+		}
+
+		/* Style the reset button */
+		.btn-reset {
+			background-color: #f44336;
+		}
+
+		/* Style error messages */
+		.error-message {
+			color: #f44336;
+			margin-top: 5px;
+		}
+
+		/* Style the table */
+		table {
+			border-collapse: collapse;
+			width: 100%;
+		}
+
+		/* Style table headers and cells */
+		th,
+		td {
+			border: 1px solid #ddd;
+			padding: 8px;
+			text-align: left;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Registration Form -->
+	<h2>Registration</h2>
+	<form id="registration-form" onsubmit="return validateForm()">
+		<!-- Login -->
+		<div class="form-group">
+			<label for="login">Login:</label>
+			<input type="text" id="login" name="login" required>
+		</div>
+		<!-- Password -->
+		<div class="form-group">
+			<label for="password">Password:</label>
+			<input type="password" id="password" name="password" required>
+		</div>
+		<!-- Confirm Password -->
+		<div class="form-group">
+			<label for="confirm-password">Password confirmation:</label>
+			<input type="password" id="confirm-password" name="confirm-password" required>
+		</div>
+		<!-- Full Name -->
+		<div class="form-group">
+			<label for="full-name">Full name:</label>
+			<input type="text" id="full-name" name="full-name" required>
+		</div>
+		<!-- Gender -->
+		<div class="form-group">
+			<label>Gender:</label>
+			<label><input type="radio" name="gender" value="M" required> M</label>
+			<label><input type="radio" name="gender" value="F" required> F</label>
+		</div>
+		<!-- Specialization -->
+		<div class="form-group">
+			<label>Specialization:</label>
+			<label><input type="checkbox" name="specialization" value="Design" onclick="handleCheckboxChange(this)">
+				Design</label>
+			<label><input type="checkbox" name="specialization" value="Programming" onclick="handleCheckboxChange(this)">
+				Programming</label>
+			<label><input type="checkbox" name="specialization" value="Administration" onclick="handleCheckboxChange(this)">
+				Administration</label>
+		</div>
+		<!-- Position -->
+		<div class="form-group">
+			<label for="position">Position:</label>
+			<select id="position" name="position" required>
+				<option value="" disabled selected>Select position</option>
+				<option value="Option 1">Option 1</option>
+				<option value="Option 2">Option 2</option>
+				<option value="Option 3">Option 3</option>
+			</select>
+		</div>
+		<!-- Button Group -->
+		<div class="btn-group">
+			<input type="submit" class="btn" value="Register">
+			<input type="reset" class="btn btn-reset" value="Reset">
+		</div>
+	</form>
+
+	<script>
+		// Form validation function
+		function validateForm() {
+			// Retrieve form values
+			var login = document.getElementById("login").value;
+			var password = document.getElementById("password").value;
+			var confirmPassword = document.getElementById("confirm-password").value;
+			var fullName = document.getElementById("full-name").value;
+			var gender = document.querySelector('input[name="gender"]:checked');
+			var specialization = document.querySelector('input[name="specialization"]:checked');
+			var position = document.getElementById("position").value;
+
+			// Check if all fields are filled
+			if (!login || !password || !confirmPassword || !fullName || !gender || !specialization || !position) {
+				alert("Please fill in all fields.");
+				return false;
+			}
+
+			// Check password length
+			if (password.length < 3 || password.length > 10) {
+				alert("Password must be between 3 and 10 characters.");
+				return false;
+			}
+
+			// Check if password and confirmation match
+			if (password !== confirmPassword) {
+				alert("Password and confirmation do not match.");
+				return false;
+			}
+
+			// If form is valid, display data in a new window
+			var data = {
+				"Login": login,
+				"Password": password,
+				"Full Name": fullName,
+				"Gender": gender.value,
+				"Specialization": specialization.value,
+				"Position": position
+			};
+
+			// Create table and table elements
+			var table = document.createElement("table");
+			var thead = table.createTHead();
+			var tbody = table.createTBody();
+
+			// Add table headers
+			var headerRow = thead.insertRow();
+			for (var key in data) {
+				var headerCell = document.createElement("th");
+				headerCell.textContent = key;
+				headerRow.appendChild(headerCell);
+			}
+
+			// Add table data
+			var dataRow = tbody.insertRow();
+			for (var key in data) {
+				var dataCell = document.createElement("td");
+				dataCell.textContent = data[key];
+				dataRow.appendChild(dataCell);
+			}
+
+			// Open a new window and append the table
+			var newWindow = window.open("", "Registration Data", "width=500,height=300");
+			newWindow.document.body.appendChild(table);
+
+			return false;
+		}
+
+		// Checkbox handler function
+		function handleCheckboxChange(checkbox) {
+			var checkboxes = document.querySelectorAll('input[name="specialization"]');
+			checkboxes.forEach(function (cb) {
+				if (cb !== checkbox) {
+					cb.checked = false;
+				}
+			});
+		}
+	</script>
+</body>
+
+</html>
