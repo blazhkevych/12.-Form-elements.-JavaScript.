@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>JavaScript Test</title>
+</head>
+
+<body>
+	<h1>JavaScript Test</h1>
+	<div id="question-container">
+		<!-- Element to display the question number -->
+		<span id="question-number"></span>
+		<!-- Element to display the question -->
+		<h3 id="question"></h3>
+		<!-- Container for displaying answer options -->
+		<div id="answers"></div>
+		<br>
+		<!-- Button to submit an answer -->
+		<button id="answer-btn" disabled>Answer</button>
+		<!-- Element to display the timer -->
+		<p id="timer"></p>
+	</div>
+
+	<script>
+		// Define the questions and answers
+		const questions = [
+			{
+				question: 'What is a closure in JavaScript?',
+				answers: [
+					'A method for manipulating strings',
+					'A property of an object',
+					'A function that returns another function',
+					'A container for storing data values'
+				],
+				correctAnswerIndices: [2]
+			},
+			{
+				question: 'What is hoisting in JavaScript?',
+				answers: [
+					'A method for manipulating strings',
+					'A property of an object',
+					'A container for storing data values',
+					'The behavior of moving variable and function declarations to the top of their respective scopes'
+				],
+				correctAnswerIndices: [3]
+			},
+			{
+				question: 'What is the difference between let and var in JavaScript?',
+				answers: [
+					'let has block scope, while var has function scope',
+					'let has function scope, while var has block scope',
+					'let and var have the same scope',
+					'let and var are not used for declaring variables'
+				],
+				correctAnswerIndices: [0]
+			},
+			{
+				question: 'What is the difference between call() and apply() in JavaScript?',
+				answers: [
+					'call() takes arguments as an array, while apply() takes arguments separately',
+					'call() and apply() take arguments in the same way',
+					'call() takes arguments separately, while apply() takes arguments as an array',
+					'call() and apply() are not used for calling functions'
+				],
+				correctAnswerIndices: [2]
+			},
+			{
+				question: 'What is the difference between == and === in JavaScript?',
+				answers: [
+					'== compares values without type coercion, while === compares values after type coercion',
+					'== compares values after type coercion, while === compares values without type coercion',
+					'== and === compare values in the same way',
+					'== and === are not used for comparison'
+				],
+				correctAnswerIndices: [1]
+			},
+			{
+				question: 'What is the difference between null and undefined in JavaScript?',
+				answers: [
+					'null represents the intentional absence of any object value, while undefined represents a variable that has been declared but not assigned a value',
+					'null represents a variable that has been declared but not assigned a value, while undefined represents the intentional absence of any object value',
+					'null and undefined represent the same thing',
+					'null and undefined are not used in JavaScript'
+				],
+				correctAnswerIndices: [0]
+			},
+			{
+				question: 'What is an Immediately Invoked Function Expression (IIFE)?',
+				answers: [
+					'A function that is defined and executed immediately',
+					'A method for manipulating strings',
+					'A property of an object',
+					'A container for storing data values'
+				],
+				correctAnswerIndices: [0]
+			},
+			{
+				question: 'What is the difference between forEach() and map() in JavaScript?',
+				answers: [
+					'forEach() applies a function to each element of an array, while map() creates a new array with the results of calling a provided function on every element',
+					'forEach() creates a new array with the results of calling a provided function on every element, while map() applies a function to each element of an array',
+					'forEach() and map() do the same thing',
+					'forEach() and map() are not used with arrays'
+				],
+				correctAnswerIndices: [0]
+			},
+			{
+				question: 'What is the difference between a method and a function in JavaScript?',
+				answers: [
+					'A function is a method that belongs to an object',
+					'Methods and functions are the same thing',
+					'Methods and functions are not used in JavaScript',
+					'A method is a function that belongs to an object'
+				],
+				correctAnswerIndices: [3]
+			},
+			{
+				question: 'What is event bubbling in JavaScript?',
+				answers: [
+					'The propagation of an event from the innermost element to the outermost element',
+					'The propagation of an event from the outermost element to the innermost element',
+					'The prevention of event propagation',
+					'The triggering of multiple events at once'
+				],
+				correctAnswerIndices: [0]
+			},
+			{
+				question: 'What is event delegation in JavaScript?',
+				answers: [
+					'The use of multiple event listeners on child elements to handle events on their parent element',
+					'The prevention of event propagation',
+					'The use of a single event listener on a parent element to handle events on its child elements',
+					'The triggering of multiple events at once'
+				],
+				correctAnswerIndices: [2]
+			},
+			{
+				question: 'What is strict mode in JavaScript?',
+				answers: [
+					'A mode that makes it easier to write secure JavaScript code by throwing errors for potentially unsafe actions',
+					'A mode that makes it easier to write insecure JavaScript code by ignoring errors for potentially unsafe actions',
+					'A mode that makes it easier to write secure JavaScript code by ignoring errors for potentially unsafe actions',
+					'A mode that makes it easier to write insecure JavaScript code by throwing errors for potentially safe actions'
+				],
+				correctAnswerIndices: [0]
+			},
+		];
+
+		let currentQuestionIndex = 0; // Keeps track of the current question index
+		let timer; // Stores the timer interval
+		let timeRemaining = 10; // Initial time remaining for each question
+		let userAnswers = []; // Stores the selected answers for each question
+
+		function showQuestion() {
+			const questionNumberElement = document.getElementById('question-number');
+			const questionElement = document.getElementById('question');
+			const answerContainer = document.getElementById('answers');
+			const answerBtn = document.getElementById('answer-btn');
+			const timerElement = document.getElementById('timer');
+
+			// Update question number and text
+			questionNumberElement.textContent = `Question ${currentQuestionIndex + 1} out of ${questions.length}`;
+			questionElement.textContent = questions[currentQuestionIndex].question;
+
+			// Clear previous answer selections
+			answerContainer.innerHTML = '';
+
+			// Create checkboxes for answer options
+			const answers = questions[currentQuestionIndex].answers;
+			answers.forEach((answer, index) => {
+				const checkbox = document.createElement('input');
+				checkbox.type = 'checkbox';
+				checkbox.name = 'answers';
+				checkbox.value = index;
+				checkbox.addEventListener('change', updateSelectedAnswers);
+
+				const label = document.createElement('label');
+				label.appendChild(checkbox);
+				label.appendChild(document.createTextNode(answer));
+
+				answerContainer.appendChild(label);
+				answerContainer.appendChild(document.createElement('br'));
+			});
+
+			// Enable/disable answer button
+			answerBtn.disabled = true;
+
+			// Start the timer
+			timeRemaining = 20;
+			timerElement.textContent = `${timeRemaining} seconds left`;
+			timer = setInterval(updateTimer, 1000);
+		}
+
+		function updateSelectedAnswers() {
+			const checkedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+			const answerBtn = document.getElementById('answer-btn');
+			answerBtn.disabled = checkedCheckboxes.length === 0;
+
+			// Store the selected answer indices for the current question
+			userAnswers[currentQuestionIndex] = Array.from(checkedCheckboxes).map((checkbox) => parseInt(checkbox.value));
+		}
+
+		function updateTimer() {
+			const timerElement = document.getElementById('timer');
+			timeRemaining--;
+			timerElement.textContent = `${timeRemaining} seconds left`;
+
+			if (timeRemaining === 0) {
+				clearInterval(timer);
+				showNextQuestion();
+			}
+		}
+
+		function showNextQuestion() {
+			clearInterval(timer);
+
+			// Check if there are more questions
+			if (currentQuestionIndex < questions.length - 1) {
+				currentQuestionIndex++;
+				showQuestion();
+			} else {
+				showResult();
+			}
+		}
+
+		function showResult() {
+			// Calculate the score
+			let score = 0;
+
+			for (let i = 0; i < questions.length; i++) {
+				const correctAnswers = questions[i].correctAnswerIndices;
+				const userSelectedAnswers = userAnswers[i];
+
+				if (arraysEqual(correctAnswers, userSelectedAnswers)) {
+					score++;
+				}
+			}
+
+			// Show the result in a dialog box
+			const playerName = prompt('Please enter your name:');
+			if (playerName) {
+				alert(`Congratulations, ${playerName}! You passed the test with a score of ${score}/${questions.length}.`);
+			}
+		}
+
+		// Helper function to check if two arrays are equal
+		function arraysEqual(arr1, arr2) {
+			if (arr1.length !== arr2.length) {
+				return false;
+			}
+
+			for (let i = 0; i < arr1.length; i++) {
+				if (arr1[i] !== arr2[i]) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		// Event listener
+		const answerBtn = document.getElementById('answer-btn');
+		answerBtn.addEventListener('click', showNextQuestion);
+
+		// Start the test
+		showQuestion();
+	</script>
+</body>
+
+</html>
